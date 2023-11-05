@@ -11,14 +11,23 @@ def index():
     return "Hello World!"
 
 # start server if not on
-@app.route('/startserver/model/<model>', methods=['GET']):
+@app.route('/start_server/model/<model>', methods=['GET']):
 def start_server(model):
+    if process:
+        status = "running"
+
+    else:
+        status = "starting"
+        cmd = ['bash start_linux']
+        process = subprocess.Popen(cmd)
+
     return {
         "result": "success",
-        "model": model
+        "model": model,
+        "status": status
     }
 
-@app.route('/currentmodel')
+@app.route('/current_model')
 def current_model():
     args = find_arg("CMD_FLAGS.txt")
     selected_arg = None
@@ -38,3 +47,19 @@ def current_model():
         "result": "failure",
         "model": None
     }
+
+@app.route('/is_running')
+def is_running():
+    return {
+        "result": "success",
+        "running": True if subprocess else False
+    }
+
+@app.route('/terminate')
+def terminate():
+    if process:
+        process.terminate()
+        return { "result": "success" }
+    
+    else:
+        return { "result": "failure" }
