@@ -5,22 +5,30 @@ import find_arg
 app = Flask(__name__)
 process = None
 
+os.chdir('./text-generation-webui')
+
 # test route 
 @app.route('/', methods=['GET'])
 def index():
     return "Hello World!"
 
 # start server if not on
-@app.route('/start_server/model/<model>', methods=['GET']):
+@app.route('/start_server/model/<model>', methods=['GET'])
 def start_server(model):
-    if process:
-        status = "running"
-
-    else:
+    try: # heavy hack shit
+        if process:
+            status = "running"
+    
+    except NameError: # assume None i hate it too
         status = "starting"
-        cmd = ['bash start_linux']
-        process = subprocess.Popen(cmd)
+        
+        # change model to selected one
+        os.system('rm CMD_FLAGS.txt')
+        os.system(f'cp CMD_FLAGS_{model}.txt CMD_FLAGS.txt')
 
+        run_server_cmd = ['bash start_linux']
+        process = subprocess.Popen(run_server_cmd)
+   
     return {
         "result": "success",
         "model": model,
@@ -29,7 +37,7 @@ def start_server(model):
 
 @app.route('/current_model')
 def current_model():
-    args = find_arg("CMD_FLAGS.txt")
+    args = find_arg.find_args("CMD_FLAGS.txt")
     selected_arg = None
 
     # find model from current arguments
@@ -63,3 +71,6 @@ def terminate():
     
     else:
         return { "result": "failure" }
+
+if __name__ == "__main__":
+    app.run()
