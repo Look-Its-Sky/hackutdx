@@ -1,3 +1,0 @@
-services:
-  server-control-api:
-    build: server-control-api/
