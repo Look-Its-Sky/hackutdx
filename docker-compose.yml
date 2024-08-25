@@ -1,4 +1,17 @@
 services:
+  db:
+    container_name: postgres
+    image: postgres
+    ports:
+      - 5001:5432
+      
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /data/postgres
+      POSTGRES_DB: bank
+    volumes:
+      - db:/data/postgres
   api:
     build: api/
     ports:
