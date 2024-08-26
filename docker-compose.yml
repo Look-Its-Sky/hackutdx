@@ -3,23 +3,26 @@ services:
     container_name: postgres
     image: postgres
     ports:
-      - 5001:5432
-      
+      - "5001:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /data/postgres
       POSTGRES_DB: bank
     volumes:
-      - db:/data/postgres
+      - db-data:/data/postgres
+
   api:
-    build: api/
+    build: ./api
     ports:
-      - '8000:8000'
+      - "8000:8000"
 
   frontend:
-    build: frontend/
+    build: ./frontend
     ports:
-      - '3000:3000'
+      - "3000:3000"
     environment:
-      - DEBUG=false
+      DEBUG: "false"
+
+volumes:
+  db-data:
